@@ -1,6 +1,6 @@
-# Second Me (Fork) — Maxim Strekolovskiy
+# Second Me Evolve
 
-This repository is a **fork** of **Second Me** by **Mindverse**, maintained by **Maxim Strekolovskiy**.
+This repository is a **fork** of **Second Me** by **Mindverse**.
 
 Key additions in this fork include automatic reinforcement learning (A/B + LLM-based judge), ClickHouse-backed RL logging, and an upgraded Hugging Face base model for DPO.
 
