@@ -1,12 +1,12 @@
 # Second Me (Fork) — Maxim Strekolovskiy
 
-This repository is a **fork** of **Second Me** by **Mindverse**. I, **Maxim Strekolovskiy**, modified and continue developing it: added automatic reinforcement learning, made ClickHouse required for RL logs, integrated a `gpt-5-nano` judge through an HTTP proxy, and switched to a stronger Hugging Face base model for DPO.
+This repository is a **fork** of **Second Me** by **Mindverse**. I, **Maxim Strekolovskiy**, modified and continue developing it: added automatic reinforcement learning, made ClickHouse required for RL logs, integrated an LLM-based response evaluator (judge), and switched to a stronger Hugging Face base model for DPO.
 
 ## What it is
 **Second Me** is a “second self” system: local memory + chat interface + data generation / training pipeline.
 
 This fork adds (high level):
-- **Fully automatic self-improvement (no likes/dislikes):** A/B generation → LLM judge (`gpt-5-nano`) → preference pairs → DPO fine-tuning.
+- **Fully automatic self-improvement (no likes/dislikes):** A/B generation → LLM-based judge → preference pairs → DPO fine-tuning.
 - **User mood / satisfaction inference** by the judge and reward logging.
 - **ClickHouse required** as the only RL database for `chat_experiences`, `chat_preferences`, `chat_feedback`.
 - **Automatic reinforce pipeline** on a timer/threshold: ClickHouse → dataset export → `dpo_train.py`.
@@ -26,11 +26,11 @@ docker compose up -d --build backend frontend
 
 ## Automatic training (how it works)
 - Each request to `/api/kernel2/chat` produces two candidate answers (A/B).
-- The `gpt-5-nano` judge selects the better one → only the winner is shown to the user.
+- The judge selects the better one → only the winner is shown to the user.
 - The `(chosen, rejected)` pair is stored in ClickHouse.
 - On a timer (`AUTO_REINFORCE_INTERVAL_SEC`) the system runs DPO training from accumulated pairs.
 
-## Secrets (API key / proxy)
+## Secrets (API keys)
 This fork reads secrets from:
 - `data/secrets.env` (not committed; `data/` is in `.gitignore`)
 

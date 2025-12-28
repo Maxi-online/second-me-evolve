@@ -11,10 +11,10 @@ Fork maintainer:
 - Maxim Strekolovskiy
 
 Summary of notable changes in this fork (non-exhaustive):
-- Automatic reinforcement learning loop: A/B generation + LLM judge (gpt-5-nano) → preference pairs.
+- Automatic reinforcement learning loop: A/B generation + LLM-based judge → preference pairs.
 - User-mood reward estimation via LLM judge (no explicit likes/dislikes).
 - RL logs stored in ClickHouse (required) and periodic auto DPO training from ClickHouse.
-- Infrastructure updates for ClickHouse + proxy support for OpenAI judge calls.
+- Infrastructure updates for ClickHouse and judge integration.
 
 Important:
 This NOTICE file is for attribution and informational purposes. It does not modify the Apache-2.0 license terms for the upstream work.
