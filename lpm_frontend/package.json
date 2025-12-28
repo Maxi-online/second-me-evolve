@@ -33,7 +33,7 @@
     "@types/styled-components": "^5.1.34",
     "@types/three": "^0.174.0",
     "antd": "5.11.0",
-    "axios": "^1.8.2",
+    "axios": "^1.12.0",
     "canvas-confetti": "^1.9.3",
     "class-variance-authority": "^0.7.1",
     "classnames": "^2.5.1",
