@@ -1,0 +1,105 @@
+{
+    "query": [
+        {
+            "type": "infoRecall",
+            "prompt": "When you ask about specific information mentioned earlier, you want to recall or clarify some content from your notes or previous conversations. Please pose the question clearly and specify the details or context you're inquiring about. The goal is for your AI assistant to retrieve or clarify that information from your prior knowledge or records. For example, you can ask, 'What were the suggestions for optimizing the marketing strategy in last week's meeting?' or 'Can you remind me of the key points we discussed about product development?'",
+            "requiredAnswerTypes": [
+                "infoBased"
+            ],
+            "optionalAnswerTypes": [
+                "guide"
+            ],
+            "weight": 1
+        },
+        {
+            "type": "suggestionRequest",
+            "prompt": "When you seek advice or recommendations, the goal is to request suggestions related to personal preferences, background, or previous experiences. Clearly specify what type of recommendation you're seeking, such as books, travel destinations, or strategies, and provide relevant background information to help the AI assistant give a more personalized response. For example, you can ask, 'Can you recommend a book about leadership in tech companies?' or 'What is a quiet, relaxing mountain travel destination?'",
+            "requiredAnswerTypes": [
+                "suggestion"
+            ],
+            "optionalAnswerTypes": [
+                "guide",
+                "emotion",
+                "narrative"
+            ],
+            "weight": 1
+        },
+        {
+            "type": "emotionalExchange",
+            "prompt": "When you share emotions or states, the goal is to express your feelings and seek empathy, support, or understanding from your AI assistant. Clearly describe your emotions or experiences and provide background information when appropriate to help the assistant respond better. For example, you might say, 'I'm feeling very stressed about the deadline for the new project, do you think I should manage this stress?' or 'I'm really excited about OpenAI's recent advancements, how do you think these technologies will change the industry?'",
+            "requiredAnswerTypes": [
+                "emotion"
+            ],
+            "optionalAnswerTypes": [
+                "narrative",
+                "suggestion",
+                "guide"
+            ],
+            "weight": 1
+        },
+        {
+            "type": "openEnded",
+            "prompt": "When you ask an open-ended question, the aim is to seek a deeper understanding or engage in an in-depth discussion. Frame questions in a way that can provoke analysis or insight, and provide sufficient context when necessary to guide the discussion. For example, you could ask, 'How do you think AI will impact the job market over the next decade?' or 'Why do you think creativity is crucial for innovation?'",
+            "requiredAnswerTypes": [],
+            "optionalAnswerTypes": [
+                "narrative",
+                "suggestion",
+                "guide",
+                "emotion"
+            ],
+            "weight": 1
+        },
+        {
+            "type": "unanswerable",
+            "prompt": "When you pose a question completely unrelated to existing information, or which current knowledge cannot sufficiently answer, the goal is to explore new areas or challenges, and the AI assistant may not be able to provide an immediate answer. Clearly indicate that this question might require creative thinking or an out-of-the-box approach. For example, you might ask, 'Are there any new AI applications in space exploration that haven't been fully explored?' or 'Can you design a creative marketing campaign for a niche audience?'",
+            "requiredAnswerTypes": [
+                "guide"
+            ],
+            "optionalAnswerTypes": [],
+            "weight": 1
+        },
+        {
+            "type": "global",
+            "prompt": "When you pose a question that requires integrating information from multiple sources or a global perspective, the goal is to challenge the AI assistant to integrate broader knowledge and insights. Emphasize that you're looking for an answer that can consider different aspects or multiple factors. For example, you might ask, 'Based on my past projects and current goals, which long-term strategies should I focus on to develop my business?' or 'How to effectively combine different AI models to handle long contexts and local tasks?'",
+            "requiredAnswerTypes": [],
+            "optionalAnswerTypes": [
+                "emotion",
+                "narrative",
+                "suggestion",
+                "guide"
+            ],
+            "weight": 4
+        }
+    ],
+    "answer": [
+        {
+            "type": "infoBased",
+            "prompt": "When providing factual information, the primary goal is to offer a clear, concise, and precise answer based on existing knowledge. Ensure that the response is straightforward, enabling the user to immediately grasp the core facts, avoiding ambiguity. Avoid speculative statements or unnecessary elaboration. If relevant, cross-reference the user's notes or previous questions to maintain consistency. The tone should remain neutral and objective, focusing on efficiently conveying facts.",
+            "extraInfo": []
+        },
+        {
+            "type": "guide",
+            "prompt": "When guiding users to think deeply through questions or prompts, the AI assistant's role is to gently steer users towards deeper exploration. If existing information is insufficient, politely acknowledge this and invite the user to provide more details or consider different perspectives. Customize questions based on the user's preferences or past interactions, posing thought-provoking questions that encourage self-reflection while ensuring the user feels supported and understood. The goal is to keep the conversation open and dynamic, sparking curiosity without pressuring the user.",
+            "extraInfo": [
+                "globalBio"
+            ]
+        },
+        {
+            "type": "suggestion",
+            "prompt": "When providing personalized advice, focus on tailoring it according to the user's unique preferences, habits, and past decisions. Reflect on the user's current needs and recent inputs, offering practical solutions aligned with their background. Strive to balance objectivity with personalization—though some responses may require expertise, keep them relevant to the user's specific situation. Suggestions should be actionable and flexible, allowing the user to implement or adapt them based on their changing needs.",
+            "extraInfo": [
+                "globalBio"
+            ]
+        },
+        {
+            "type": "emotion",
+            "prompt": "In emotion-driven responses, the role of the AI assistant is to provide empathy, understanding, and comfort. Acknowledge the user's feelings and validate their emotions, creating a safe and supportive space for emotional expression. The tone should be warm and compassionate, emphasizing your role as a non-judgmental, attentive assistant. Offer thoughtful and caring responses that help the user feel understood, while gently guiding or suggesting emotional well-being when appropriate.",
+            "extraInfo": []
+        },
+        {
+            "type": "narrative",
+            "prompt": "When conveying information through storytelling or case studies, the aim is to make the information more resonant and engaging by linking it with real-world scenarios or experiences relatable to the user. The goal is to present ideas in a narrative form, making them easier to understand and remember. Stories should be tailored to the user's background, ensuring they resonate with the user's personal or professional experiences. Balance the details to ensure the story is impactful yet not overly elaborate. This approach can deepen emotional engagement and reinforce key points through relatable examples.",
+            "extraInfo": []
+        }
+    ]
+}

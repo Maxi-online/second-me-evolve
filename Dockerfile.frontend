@@ -1,0 +1,25 @@
+FROM node:23
+
+# Set working directory
+WORKDIR /app
+
+# Copy frontend package files
+COPY lpm_frontend/package.json lpm_frontend/package-lock.json* /app/
+
+# Install dependencies
+RUN npm install
+
+# Copy frontend code
+COPY lpm_frontend/ /app/
+
+# Set environment variable for backend URL (can be overridden in docker-compose)
+ENV DOCKER_API_BASE_URL=http://backend:8002
+
+# Create logs directory
+RUN mkdir -p /app/logs
+
+# Expose frontend port
+EXPOSE 3000
+
+# Start frontend service
+CMD ["npm", "run", "dev"]

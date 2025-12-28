@@ -1,0 +1,21 @@
+Second-Me Fork Notice
+=====================
+
+This repository is a **fork** of the open-source project **Second Me** by **Mindverse**.
+
+- Upstream project: Mindverse/Second-Me
+- Upstream copyright: Copyright 2025 Mindverse
+- Upstream license: Apache License 2.0 (see `LICENSE`)
+
+Fork maintainer:
+- Maxim Strekolovskiy
+
+Summary of notable changes in this fork (non-exhaustive):
+- Automatic reinforcement learning loop: A/B generation + LLM judge (gpt-5-nano) → preference pairs.
+- User-mood reward estimation via LLM judge (no explicit likes/dislikes).
+- RL logs stored in ClickHouse (required) and periodic auto DPO training from ClickHouse.
+- Infrastructure updates for ClickHouse + proxy support for OpenAI judge calls.
+
+Important:
+This NOTICE file is for attribution and informational purposes. It does not modify the Apache-2.0 license terms for the upstream work.
+

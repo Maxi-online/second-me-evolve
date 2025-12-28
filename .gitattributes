@@ -1,0 +1,16 @@
+# Set all text files to use LF line endings
+* text=auto eol=lf
+
+# Binary files should not be modified
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.mov binary
+*.mp4 binary
+*.mp3 binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.tar binary

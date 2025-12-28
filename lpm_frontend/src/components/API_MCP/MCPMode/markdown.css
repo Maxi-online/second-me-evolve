@@ -1,0 +1,235 @@
+/* Markdown content styling */
+.markdown-content {
+  /* Base styling */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  line-height: 1.6;
+  color: #333;
+  padding: 0 1rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Ensure code blocks don't overflow */
+.markdown-content pre {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-radius: 3px;
+  overflow: auto;
+  background-color: #f6f8fa;
+  font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+/* Headings */
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.markdown-content h1 {
+  font-size: 2rem;
+  border-bottom: 1px solid #eaecef;
+  padding-bottom: 0.3rem;
+}
+
+.markdown-content h2 {
+  font-size: 1.5rem;
+  border-bottom: 1px solid #eaecef;
+  padding-bottom: 0.3rem;
+}
+
+.markdown-content h3 {
+  font-size: 1.25rem;
+}
+
+.markdown-content h4 {
+  font-size: 1rem;
+}
+
+/* Paragraphs and lists */
+.markdown-content p,
+.markdown-content ul,
+.markdown-content ol {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  padding-left: 2rem;
+}
+
+.markdown-content li {
+  margin-bottom: 0.25rem;
+}
+
+.markdown-content ul ul,
+.markdown-content ol ol,
+.markdown-content ul ol,
+.markdown-content ol ul {
+  margin-top: 0.25rem;
+  margin-bottom: 0;
+}
+
+/* Links */
+.markdown-content a {
+  color: #0366d6;
+  text-decoration: none;
+}
+
+.markdown-content a:hover {
+  text-decoration: underline;
+}
+
+/* Code blocks */
+.markdown-content code {
+  font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+  font-size: 0.85rem;
+  padding: 0.2rem 0.4rem;
+  margin: 0;
+  background-color: rgba(27, 31, 35, 0.05);
+  border-radius: 3px;
+}
+
+.markdown-content pre code {
+  padding: 0;
+  background-color: transparent;
+  border-radius: 0;
+}
+
+/* Blockquotes */
+.markdown-content blockquote {
+  margin: 0 0 1rem;
+  padding: 0 1rem;
+  color: #6a737d;
+  border-left: 0.25rem solid #dfe2e5;
+}
+
+.markdown-content blockquote > :first-child {
+  margin-top: 0;
+}
+
+.markdown-content blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+/* Tables */
+.markdown-content table {
+  display: block;
+  width: 100%;
+  overflow: auto;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.markdown-content table th,
+.markdown-content table td {
+  padding: 0.75rem 1rem;
+  border: 1px solid #dfe2e5;
+  text-align: left;
+  vertical-align: top;
+}
+
+.markdown-content table th {
+  font-weight: 600;
+  background-color: #f6f8fa;
+  white-space: nowrap;
+}
+
+.markdown-content table tr {
+  background-color: #fff;
+  border-top: 1px solid #c6cbd1;
+}
+
+.markdown-content table tr:nth-child(2n) {
+  background-color: #f6f8fa;
+}
+
+/* Ensure tables with long content don't break layout */
+.markdown-content table td {
+  word-break: break-word;
+  min-width: 100px;
+}
+
+/* Style for the first column (parameter names) */
+.markdown-content table td:first-child,
+.markdown-content table th:first-child {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Images */
+.markdown-content img {
+  max-width: 100%;
+  box-sizing: content-box;
+  background-color: #fff;
+}
+
+/* Horizontal rule */
+.markdown-content hr {
+  height: 0.25rem;
+  padding: 0;
+  margin: 1.5rem 0;
+  background-color: #e1e4e8;
+  border: 0;
+}
+
+/* Enhanced table styling */
+.enhanced-table {
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin: 1.5rem 0;
+}
+
+.enhanced-table th {
+  background-color: #f0f4f8;
+  color: #2c5282;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  padding: 1rem;
+}
+
+.enhanced-table td {
+  padding: 0.8rem 1rem;
+  border: 1px solid #e2e8f0;
+}
+
+.enhanced-table tr:hover {
+  background-color: #f8fafc;
+}
+
+/* Style for parameter name column */
+.enhanced-table td:first-child {
+  font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+  font-weight: 600;
+  color: #2d3748;
+  white-space: nowrap;
+}
+
+/* Style for type column */
+.enhanced-table td:nth-child(2) {
+  font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+  color: #6b46c1;
+  white-space: nowrap;
+}
+
+/* Style for description column */
+.enhanced-table td:nth-child(3) {
+  line-height: 1.6;
+}

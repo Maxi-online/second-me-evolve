@@ -1,0 +1,74 @@
+FROM python:3.12
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies, Poetry and configure it
+RUN apt-get update && apt-get install -y \
+    build-essential cmake git curl wget lsof vim unzip sqlite3 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && pip install --upgrade pip \
+    && pip install poetry \
+    && poetry config virtualenvs.create false
+
+# Create directories
+RUN mkdir -p /app/dependencies /app/data/sqlite /app/data/chroma_db /app/logs /app/run /app/resources
+
+# Copy dependency files - Files that rarely change
+COPY dependencies/graphrag-1.2.1.dev27.tar.gz /app/dependencies/
+COPY dependencies/llama.cpp.zip /app/dependencies/
+
+# Copy GPU checker script (only used for status reporting, not rebuilding)
+COPY docker/app/check_gpu_support.sh /app/
+COPY docker/app/check_torch_cuda.py /app/
+RUN chmod +x /app/check_gpu_support.sh
+
+# Build llama.cpp
+RUN LLAMA_LOCAL_ZIP="dependencies/llama.cpp.zip" \
+    && echo "Using local llama.cpp archive..." \
+    && unzip -q "$LLAMA_LOCAL_ZIP" \
+    && cd llama.cpp \
+    && mkdir -p build && cd build \
+    && cmake .. \
+    && cmake --build . --config Release \
+    && if [ ! -f "bin/llama-server" ]; then \
+         echo "Build failed: llama-server executable not found" && exit 1; \
+       else \
+         echo "Successfully built llama-server"; \
+       fi
+
+# Mark as CPU-only build for runtime reference
+RUN mkdir -p /app/data && \
+    echo "{ \"gpu_optimized\": false, \"optimized_on\": \"$(date -u +\"%Y-%m-%dT%H:%M:%SZ\")\" }" > /app/data/gpu_optimized.json && \
+    echo "Created CPU-only marker file"
+
+# Copy project configuration - Files that occasionally change
+COPY pyproject.toml README.md /app/
+
+RUN poetry install --no-interaction --no-root
+RUN pip install --force-reinstall dependencies/graphrag-1.2.1.dev27.tar.gz
+
+
+# Copy source code - Files that frequently change
+COPY docker/ /app/docker/
+COPY lpm_kernel/ /app/lpm_kernel/
+
+# Check module import
+RUN python -c "import lpm_kernel; print('Module import check passed')"
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app \
+    BASE_DIR=/app/data \
+    LOCAL_LOG_DIR=/app/logs \
+    RUN_DIR=/app/run \
+    RESOURCES_DIR=/app/resources \
+    APP_ROOT=/app \
+    FLASK_APP=lpm_kernel.app
+
+# Expose ports
+EXPOSE 8002 8080
+
+# Set the startup command
+CMD ["bash", "-c", "echo \"Checking SQLite database...\" && if [ ! -s /app/data/sqlite/lpm.db ]; then echo \"SQLite database not found or empty, initializing...\" && mkdir -p /app/data/sqlite && sqlite3 /app/data/sqlite/lpm.db \".read /app/docker/sqlite/init.sql\" && echo \"SQLite database initialized successfully\" && echo \"Tables created:\" && sqlite3 /app/data/sqlite/lpm.db \".tables\"; else echo \"SQLite database already exists, skipping initialization\"; fi && echo \"Checking ChromaDB...\" && if [ ! -d /app/data/chroma_db/documents ] || [ ! -d /app/data/chroma_db/document_chunks ]; then echo \"ChromaDB collections not found, initializing...\" && python /app/docker/app/init_chroma.py && echo \"ChromaDB initialized successfully\"; else echo \"ChromaDB already exists, skipping initialization\"; fi && echo \"Starting application at $(date)\" >> /app/logs/backend.log && cd /app && python -m flask run --host=0.0.0.0 --port=${LOCAL_APP_PORT:-8002} >> /app/logs/backend.log 2>&1"]

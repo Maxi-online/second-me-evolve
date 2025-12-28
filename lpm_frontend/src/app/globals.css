@@ -1,0 +1,81 @@
+/* stylelint-disable at-rule-no-unknown */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #fdf8f3;
+  --foreground: #2c3e50;
+  --primary: #4a90e2;
+  --primary-hover: #357abd;
+  --accent-1: #ff6b6b;
+  --accent-2: #50b86b;
+  --accent-3: #ffd93d;
+  --btn-width: 240px;
+}
+
+@layer base {
+  body {
+    @apply text-secondme-navy bg-secondme-warm-bg;
+
+    font-family: 'Helvetica Neue', sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-semibold tracking-tight;
+
+    font-family: 'Helvetica Neue', sans-serif;
+  }
+}
+
+@font-face {
+  font-weight: 400;
+  font-family: Calistoga;
+  src: url('/fonts/Calistoga.ttf');
+}
+
+@font-face {
+  font-weight: 400;
+  font-family: 'Helvetica Neue', sans-serif;
+  src: url('/fonts/Helvetica_Neue.otf');
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-6 py-3 text-base font-medium text-white bg-secondme-blue rounded-xl
+           hover:bg-[#357ABD] transition-all duration-200 ease-out
+           hover:-translate-y-0.5 hover:shadow-[4px_4px_10px_0px_rgba(74,144,226,0.3)]
+           active:translate-y-0 active:shadow-none;
+
+    width: var(--btn-width);
+  }
+
+  .card {
+    @apply rounded-2xl border border-secondme-gray-300 bg-white
+           shadow-[4px_4px_0px_0px_rgba(0,0,0,0.03)]
+           hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.05)]
+           hover:-translate-y-0.5 transition-all duration-200;
+  }
+
+  .input-field {
+    @apply px-4 py-2.5 rounded-xl border border-secondme-gray-300
+           focus:border-secondme-blue focus:ring-2 focus:ring-secondme-blue/20
+           bg-white transition-all duration-200;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}

@@ -1,0 +1,99 @@
+FROM --platform=linux/arm64 python:3.12-bullseye
+
+# Set working directory
+WORKDIR /app
+
+# 1. Install system dependencies (including SQLite compilation dependencies)
+RUN apt-get update && apt-get install -y \
+    build-essential cmake git curl wget lsof vim unzip \
+    libsqlite3-dev tcl-dev tk-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# 2. Prioritize compiling and installing the new version of SQLite
+RUN wget https://www.sqlite.org/2025/sqlite-autoconf-3490100.tar.gz \
+    && tar xzf sqlite-autoconf-3490100.tar.gz \
+    && cd sqlite-autoconf-3490100 \
+    && ./configure --enable-fts5   --prefix=/usr/local \
+    && make -j$(nproc) \
+    && make install \
+    && cd .. \
+    && rm -rf sqlite-autoconf-3490100* \
+    && ldconfig
+
+# 3. Configure Python compilation environment
+ENV CFLAGS="-I/usr/local/include -DSQLITE_ENABLE_FTS5"
+ENV LDFLAGS="-L/usr/local/lib -lsqlite3"
+ENV LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
+
+# 4. Configure Python environment
+RUN pip install --upgrade pip \
+    && pip install poetry \
+    && poetry config virtualenvs.create false
+
+# 5. Force source code compilation of pysqlite3
+RUN pip install pysqlite3 --no-binary pysqlite3
+
+# 6. Verify SQLite version
+RUN python -c "import sqlite3; print('SQLite version:', sqlite3.sqlite_version); assert sqlite3.sqlite_version.startswith('3.49.1'), 'Wrong SQLite version!'"
+
+# Maintain the original project configuration for what follows...
+# -----------------------------------------------------------
+# The following keeps the original project configuration unchanged
+# Create directories
+RUN mkdir -p /app/dependencies /app/data/sqlite /app/data/chroma_db /app/logs /app/run /app/resources
+
+# Copy dependency files
+COPY dependencies/graphrag-modified.tar.gz /app/dependencies/
+COPY dependencies/llama.cpp.zip /app/dependencies/
+
+# Build llama.cpp
+RUN LLAMA_LOCAL_ZIP="dependencies/llama.cpp.zip" \
+    && echo "Using local llama.cpp archive..." \
+    && unzip -q "$LLAMA_LOCAL_ZIP" \
+    && cd llama.cpp \
+    && mkdir -p build && cd build \
+    && cmake .. \
+    && cmake --build . --config Release \
+    && if [ ! -f "bin/llama-server" ]; then \
+         echo "Build failed: llama-server executable not found" && exit 1; \
+       else \
+         echo "Successfully built llama-server"; \
+       fi \
+    && cp bin/llama-server /usr/local/bin/ \
+    && chmod +x /usr/local/bin/llama-server \
+    && echo "Installed llama-server to /usr/local/bin/"
+
+# Copy project configuration
+COPY pyproject.toml README.md /app/
+
+RUN pip install -U pip setuptools wheel
+RUN pip install --no-cache-dir spacy==3.7.5
+RUN pip install --force-reinstall dependencies/graphrag-modified.tar.gz
+
+RUN pip uninstall -y chromadb \
+ && pip install chromadb==0.4.24 --no-binary chromadb --force-reinstall 
+
+RUN poetry install --no-interaction --no-root
+
+# Copy source code
+COPY docker/ /app/docker/
+COPY lpm_kernel/ /app/lpm_kernel/
+
+# Check module import
+RUN python -c "import lpm_kernel; print('Module import check passed')"
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app \
+    BASE_DIR=/app/data \
+    LOCAL_LOG_DIR=/app/logs \
+    RUN_DIR=/app/run \
+    RESOURCES_DIR=/app/resources \
+    APP_ROOT=/app \
+    FLASK_APP=lpm_kernel.app
+
+# Expose ports
+EXPOSE 8002 8080
+
+CMD ["bash", "-c", "echo \"Checking SQLite database...\" && if [ ! -s /app/data/sqlite/lpm.db ]; then echo \"SQLite database not found or empty, initializing...\" && mkdir -p /app/data/sqlite && sqlite3 /app/data/sqlite/lpm.db \".read /app/docker/sqlite/init.sql\" && echo \"SQLite database initialized successfully\" && echo \"Tables created:\" && sqlite3 /app/data/sqlite/lpm.db \".tables\"; else echo \"SQLite database already exists, skipping initialization\"; fi && echo \"Checking ChromaDB...\" && if [ ! -d /app/data/chroma_db/documents ] || [ ! -d /app/data/chroma_db/document_chunks ]; then echo \"ChromaDB collections not found, initializing...\" && python /app/docker/app/init_chroma.py && echo \"ChromaDB initialized successfully\"; else echo \"ChromaDB already exists, skipping initialization\"; fi && echo \"Starting application at $(date)\" >> /app/logs/backend.log && cd /app && python -m flask run --host=0.0.0.0 --port=${LOCAL_APP_PORT:-8002} >> /app/logs/backend.log 2>&1"]

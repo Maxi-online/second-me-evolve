@@ -1,0 +1,101 @@
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.8
+    container_name: second-me-clickhouse
+    restart: unless-stopped
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    volumes:
+      - ./data/clickhouse:/var/lib/clickhouse
+      - ./logs/clickhouse:/var/log/clickhouse-server
+    networks:
+      - second-me-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: ${DOCKER_BACKEND_DOCKERFILE:-Dockerfile.backend.cuda}
+    container_name: second-me-backend
+    restart: unless-stopped
+    ports:
+      - "8002:8002"
+      - "8080:8080"
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./run:/app/run
+      - ./resources:/app/resources
+      - ./docker:/app/docker
+      - ./.env:/app/.env
+      - llama-cpp-build:/app/llama.cpp/build  # Persist the llama.cpp build
+    environment:
+      # Environment variables
+      - LOCAL_APP_PORT=8002
+      - IN_DOCKER_ENV=1
+      - PLATFORM=${PLATFORM:-linux}
+      - USE_CUDA=1
+      # ClickHouse is REQUIRED for RL logs
+      - CLICKHOUSE_HTTP_URL=http://clickhouse:8123
+      - CLICKHOUSE_DB=default
+      # Auto reinforce from ClickHouse preferences
+      - AUTO_REINFORCE_DPO_ENABLED=1
+      - AUTO_REINFORCE_INTERVAL_SEC=1800
+      - AUTO_REINFORCE_MIN_PAIRS=50
+      - AUTO_REINFORCE_BASE_MODEL_PATH=resources/model/hf/Qwen2.5-3B-Instruct
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - clickhouse
+    deploy:
+      resources:
+        limits:
+          # Set container memory limit to 64GB
+          memory: 64G
+        reservations:
+          # Memory reservation
+          memory: 6G
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    networks:
+      - second-me-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: second-me-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./logs:/app/logs
+      - ./resources:/app/resources
+    environment:
+      - VITE_API_BASE_URL=http://backend:8002
+    depends_on:
+      - backend
+    deploy:
+      resources:
+        limits:
+          # Set container memory limit to 2GB
+          memory: 2G
+        reservations:
+          # Memory reservation
+          memory: 1G
+    networks:
+      - second-me-network
+
+networks:
+  second-me-network:
+    driver: bridge
+
+volumes:
+  llama-cpp-build:
+    driver: local
