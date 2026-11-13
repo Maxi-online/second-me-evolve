@@ -96,10 +96,10 @@ Upstream Second Me code remains under [Apache License 2.0](LICENSE).
 [NOTICE](NOTICE) records attribution. [LICENSE-MIT](LICENSE-MIT) applies to the
 new contributions covered by that file; it does not relicense upstream code.
 
-## Конфигурация, приватность и воспроизведение
+## Configuration, privacy and reproducibility
 
-Код основан на upstream Second Me; авторство и лицензии компонентов сохранены. Не публикуйте собственные воспоминания, embeddings, access tokens и результаты персонального обучения. В Python `AUTO_REINFORCE_DPO_ENABLED` по умолчанию равен `0`, но текущий Docker Compose задаёт `1`: перед запуском явно проверьте и при необходимости отключите автоматическое обучение.
+This work derives from upstream Second Me; component attribution and licenses are retained. Keep personal memories, embeddings, access tokens and personal-training outputs outside Git. Python defaults `AUTO_REINFORCE_DPO_ENABLED` to `0`, while the current Docker Compose sets it to `1`; explicitly review or disable automatic training before starting the stack.
 
-Секреты храните в игнорируемых локальных файлах или переменных окружения. Безопасные примеры содержат только структуру настройки. Не передавайте секреты в командной строке и не добавляйте заполненные `.env`, приватные ключи, базы данных и логи в коммиты.
+Keep credentials in ignored local files or environment variables. Configuration examples contain structure only. Avoid passing secrets on the command line or committing populated `.env` files, private keys, databases or logs.
 
-Workflow [Secret scan](.github/workflows/secret-scan.yml) проверяет текущие файлы и входящие коммиты Gitleaks 8.30.1 с редактированием значений в выводе. Это проверка на известные шаблоны, а не подтверждение отсутствия всех возможных утечек. Удаление значения из HEAD не очищает старую историю; порядок действий описан в [SECURITY.md](SECURITY.md).
+The [Secret scan](.github/workflows/secret-scan.yml) workflow scans current files and incoming commits with Gitleaks 8.30.1 and redacts matched values. Pattern scanning cannot prove that every possible disclosure is absent. Removing a value from HEAD does not clean older history; see [SECURITY.md](SECURITY.md) for incident handling.
