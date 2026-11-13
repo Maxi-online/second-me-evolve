@@ -43,7 +43,11 @@ def migrate_database():
         return False
     
     # Default password to use
-    default_password = "mindverse666"
+    default_password = os.environ.get("INSTANCE_BOOTSTRAP_PASSWORD")
+    if not default_password:
+        logger.error("Configure INSTANCE_BOOTSTRAP_PASSWORD before running this migration")
+        return False
+    sql_default_password = default_password.replace("'", "''")
     
     try:
         # Connect to the database
@@ -66,8 +70,8 @@ def migrate_database():
             if "instance_id" in table_column_names and "instance_password" not in table_column_names:
                 logger.info(f"Table {table_name} has instance_id but not instance_password")
                 logger.info(f"Adding instance_password column to {table_name} table")
-                cursor.execute(f"ALTER TABLE {table_name} ADD COLUMN instance_password VARCHAR(255) DEFAULT '{default_password}'")
-                logger.info(f"Added instance_password column to {table_name} table with default value '{default_password}'")
+                cursor.execute(f"ALTER TABLE {table_name} ADD COLUMN instance_password VARCHAR(255) DEFAULT '{sql_default_password}'")
+                logger.info("Instance password configured from an operator-supplied value")
                 
                 # Update existing rows to set the default password where instance_id is not null
                 cursor.execute(f"UPDATE {table_name} SET instance_password = '{default_password}' WHERE instance_id IS NOT NULL AND instance_password IS NULL")
